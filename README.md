@@ -7,6 +7,12 @@ Indicate the quantiiesy of reserved resources by annotation on persistent volume
 "reserved-mem": "100M"
 ```
 
+## Build
+
+```
+$ go build cmd/predicate-server/lpv-res-predicate.go
+```
+
 ## Plug in Kubernetes
 
 Create scheduler policy configmap:
@@ -38,7 +44,7 @@ Indicate scheduler by argument:
 --policy-configmap=scheduler-policy
 ```
 
-if using minikube, the scheduler RBAC needs to be updated by adding this rule:
+If using minikube, the scheduler RBAC needs to be updated by adding this rule:
 
 ```
 - apiGroups:
