@@ -8,6 +8,7 @@ import (
 	"github.com/golang/glog"
 	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/kubernetes/pkg/scheduler/api"
 
 	"github.com/wu8685/lpv-res-predicate/pkg"
 	"github.com/wu8685/lpv-res-predicate/pkg/config"
@@ -15,7 +16,7 @@ import (
 )
 
 var (
-	EmptyFilterResult = &ExtenderFilterResult{
+	EmptyFilterResult = &api.ExtenderFilterResult{
 		NodeNames:   &[]string{},
 		FailedNodes: map[string]string{},
 	}
@@ -51,7 +52,7 @@ func (h *PredicateHandler) RestInfos() []pkg.RestInfo {
 }
 
 func (h *PredicateHandler) handle(w http.ResponseWriter, r *http.Request) {
-	body := &ExtenderArgs{}
+	body := &api.ExtenderArgs{}
 	if err := handlers.ReadRequestBody(r, body); err != nil {
 		glog.Errorf("Fail to read request body: %s", err)
 		h.responseErr(w, err)
@@ -77,7 +78,7 @@ func (h *PredicateHandler) handle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *PredicateHandler) predicate(NodeNames []string, pod *v1.Pod) (*ExtenderFilterResult, error) {
+func (h *PredicateHandler) predicate(NodeNames []string, pod *v1.Pod) (*api.ExtenderFilterResult, error) {
 	glog.V(0).Infof("Start predicating pod %s", pod.Name)
 
 	if glog.V(1) {
@@ -108,7 +109,7 @@ func (h *PredicateHandler) predicate(NodeNames []string, pod *v1.Pod) (*Extender
 		}
 	}
 
-	return &ExtenderFilterResult{
+	return &api.ExtenderFilterResult{
 		NodeNames:   &fitNodeNames,
 		FailedNodes: failedNodesMap,
 	}, nil
@@ -358,7 +359,7 @@ func (h *PredicateHandler) remainReservedResources(pv *v1.PersistentVolume, node
 }
 
 func (h *PredicateHandler) responseErr(w http.ResponseWriter, err error) {
-	result := &ExtenderFilterResult{}
+	result := &api.ExtenderFilterResult{}
 	result.Error = err.Error()
 	handlers.WriteResponse(w, 200, result)
 }

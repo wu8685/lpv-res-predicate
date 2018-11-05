@@ -7,19 +7,20 @@ import (
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/kubernetes/pkg/scheduler/api"
 )
 
 var (
 	ZeroQuantity, _ = resource.ParseQuantity("0")
 )
 
-func getNodeNames(body *ExtenderArgs) ([]string, map[string]*v1.Node, bool) {
+func getNodeNames(body *api.ExtenderArgs) ([]string, map[string]*v1.Node, bool) {
 	if body == nil || body.Pod == nil || (body.NodeNames == nil && body.Nodes == nil) {
 		return []string{}, nil, false
 	}
 
 	if body.NodeNames != nil {
-		return body.NodeNames, nil, false
+		return *body.NodeNames, nil, false
 	}
 
 	nodeNames := make([]string, len(body.Nodes.Items))
